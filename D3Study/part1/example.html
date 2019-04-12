@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../js/d3.v3.js"></script>
+</head>
+
+<body>
+  <div class="box bar2">
+    <div><span class="span">classed增加class</span></div>
+    <div class="barFlase">false删除class</div>
+  </div>
+  <div class="box bar2"><span class="span">classed增加class</span>
+    <div>删除class</div>
+    <div class="barFlase">false删除class</div>
+  </div>
+  <div class="box bar2"><span class="span">classed增加class</span>
+    <div>删除class</div>
+    <div class="barFlase">false删除class</div>
+  </div>
+</body>
+
+</html>
+<script>
+  d3.select("body").attr("data-id", 2);
+  d3.selectAll(".box").style({
+    width: "200px",
+    height: "100px",
+    background: "#ccc",
+    margin: "10px 0 0 0"
+  });
+  d3.selectAll(".box").classed("bar", true); //添加
+  d3.selectAll(".box").classed("bar2", true); //删除
+</script>
+<style>
+  .span {
+    display: none;
+  }
+
+  .bar .span {
+    display: block
+  }
+  .bar2 .barFlase{
+    margin-top: 10px;
+    display: none
+  }
+</style>

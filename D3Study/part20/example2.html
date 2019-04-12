@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>
+
+		body {
+			font: 10px sans-serif;
+		}
+
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: #000;
+			shape-rendering: crispEdges;
+		}
+
+		.x.axis path {
+			display: none;
+		}
+
+		.line {
+			fill: none;
+			stroke: steelblue;
+			stroke-width: 1.5px;
+		}
+
+	</style>
+	<script src="../js/d3.v3.js"></script>
+	<script src="../js/underscore.js"></script>
+</head>
+<body>
+<script>
+	var margin = {top: 20, right: 20, bottom: 30, left: 50},
+			width = 960 - margin.left - margin.right,
+			height = 500 - margin.top - margin.bottom;
+
+
+	//	var dateFormat = d3.time.format("%Y-%m-%d");
+
+	var dataset = [];
+	var tmpDate = 0;
+	for(var i=0; i< 100; i++){
+		var date = new Date().getTime() + (Math.random() * 100000 * 60 * 60 * 30);
+		var value = Math.floor((Math.random() * 10) + 50);
+		var obj = {
+			date: new Date(date),
+			line1: value,
+			line2: value + 5,
+			line3: value + 12
+		}
+		dataset.push(obj);
+	}
+	dataset = _.uniq(dataset, function(d){
+		return d.date;
+	});
+	dataset = _.sortBy(dataset, function(d){
+		return d.date;
+	});
+
+	var lineData = [
+		{
+			name: "line1",
+			values:[]
+		},
+		{
+			name: "line2",
+			values: []
+		},
+		{
+			name: "line3",
+			values: []
+		}
+	];
+
+	_.each(lineData, function(l){
+		_.each(dataset, function(d){
+			l.values.push({
+				date: d.date,
+				value: d[l.name]
+			})
+		})
+	});
+
+	console.log(lineData);
+
+
+
+	var color = d3.scale.category10()
+			.domain(['line1','line2','line3']);
+
+	var svg = d3.select("body").append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+
+	var x = d3.time.scale()
+			.range([0, width])
+			.domain(d3.extent(dataset, function(d){
+				return d.date;
+			}));
+
+	var lineDataMin = d3.min(lineData, function(l){
+		return d3.min(l.values, function(v){
+			return v.value;
+		})
+	});
+	var lineDataMax = d3.max(lineData, function(l){
+		return d3.max(l.values, function(v){
+			return v.value;
+		})
+	})
+
+	var y = d3.scale.linear()
+			.range([height, 0])
+			.domain([
+					lineDataMin,
+					lineDataMax
+			]);
+
+	var xAxis = d3.svg.axis()
+			.scale(x)
+			.orient("bottom");
+
+	var yAxis = d3.svg.axis()
+			.scale(y)
+			.orient("left");
+
+	var line = d3.svg.line()
+			.x(function(d) {
+				return x(d.date);
+			})
+			.y(function(d) {
+				return y(d.value);
+			});
+
+	svg.selectAll(".line_g")
+			.data(lineData)
+			.enter()
+			.append("g")
+			.attr("class", "line_g");
+
+	svg.selectAll(".line_g")
+			.append("path")
+			.attr("class", "line")
+			.attr("d", function(d) {
+				return line(d.values);
+			})
+			.style("stroke", function(d) {
+				return color(d.name);
+			});
+
+
+	svg.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0," + height + ")")
+			.call(xAxis);
+
+	svg.append("g")
+			.attr("class", "y axis")
+			.call(yAxis)
+			.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", 6)
+			.attr("dy", ".71em")
+			.style("text-anchor", "end")
+			.text("Price ($)");
+</script>
+
+</body>
+</html>

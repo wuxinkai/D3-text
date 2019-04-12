@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script src="../js/d3.v3.js"></script>
+	<script src="../js/jquery.js"></script>
+	<style>
+		.axis path,
+		.axis line{
+			fill: none;
+			stroke: black;
+			shap-rendering: crispEdges;
+		}
+
+		.brush .extent {
+			stroke: #fff;
+			fill-opacity: .6;
+		}
+
+		.brushText{
+			width: 100px;
+			height: 80px;
+			border-radius: 5px;
+			background-color: #dddddd;
+			position: absolute;
+			top: 20px;
+			left: 600px;
+		}
+
+	</style>
+</head>
+<body>
+<div class="brushText j_brushText" style="display: none;">
+	<div class="j_xValue">
+		x:
+		<span class="j_minValue"></span>
+		~
+		<span class="j_maxValue"></span>
+	</div>
+	<div class="j_yValue">
+		y:
+		<span class="j_minValue"></span>
+		~
+		<span class="j_maxValue"></span>
+	</div>
+</div>
+<script>
+	var w = 500;
+	var h = 400;
+	var padding = 30;
+
+	var svg = d3.select("body")
+			.append("svg")
+			.attr("width", w)
+			.attr("height", h)
+
+	var dataset = [];
+	for (var i = 0; i < 10; i++) {
+		var xNumber = Math.random() * 200;
+		var yNumber = Math.random() * 300;
+		dataset.push({
+			x: xNumber,
+			y: yNumber
+		});
+	}
+
+	var xScale = d3.scale.linear()
+			.range([padding, w - padding])
+			.domain([
+				0,
+				d3.max(dataset, function(d){
+					return d.x;
+				})
+			]);
+
+	var yScale = d3.scale.linear()
+			.range([h - padding, padding])
+			.domain([
+				0,
+				d3.max(dataset, function(d){
+					return d.y;
+				})
+			]);
+
+	var brush = d3.svg.brush()
+			.x(xScale)
+			.y(yScale)
+			.on("brushstart", brushstarted)
+			.on("brush", brushed)
+			.on("brushend", brushended);
+
+	function brushstarted(){
+
+	}
+
+
+	function brushed(){
+
+
+		var extent = brush.extent();
+		console.log(extent)
+		if(extent[0][0] == extent[1][0] && extent[0][1] == extent[1][1]){
+			return;
+		}
+		$(".j_brushText")
+				.show();
+		$(".j_brushText .j_xValue .j_minValue").text(Math.floor(extent[0][0]));
+		$(".j_brushText .j_yValue .j_minValue").text(Math.floor(extent[0][1]));
+		$(".j_brushText .j_xValue .j_maxValue").text(Math.floor(extent[1][0]));
+		$(".j_brushText .j_yValue .j_maxValue").text(Math.floor(extent[1][1]));
+
+
+	}
+
+	function brushended(){
+
+		var extent = brush.extent();
+		if(extent[0][0] == extent[1][0] && extent[0][1] == extent[1][1]){
+			$(".j_brushText").hide();
+		}
+	}
+
+	var circles = svg.selectAll("circle")
+			.data(dataset)
+			.enter()
+			.append("circle")
+	svg.append("g")
+			.attr("class", "brush")
+			.call(brush)
+			.call(brush.event)
+
+	circles
+			.attr("cx", function (d, i) {
+				return xScale(d.x);
+			})
+			.attr("cy", function(d, i){
+				return yScale(d.y)
+			})
+			.attr("r", 5)
+
+	svg.selectAll("text")
+			.data(dataset)
+			.enter()
+			.append("text")
+			.attr("x", function(d){
+				return xScale(d.x)  + 5
+			})
+			.attr("y", function(d){
+				return yScale(d.y)  + 3
+			})
+			.text( function(d){
+				return Math.floor(d.x)  + "," + Math.floor(d.y);
+			})
+
+	var xAxis = d3.svg.axis()
+			.scale(xScale)
+			.orient("bottom")
+			.ticks(5)
+
+	svg.append("g")
+			.attr("class", "axis")
+			.attr("transform", "translate(0, " + (h - padding) + ")")
+			.call(xAxis);
+
+	var yAxis = d3.svg.axis()
+			.scale(yScale)
+			.orient("left")
+	svg.append("g")
+			.attr("class", "axis")
+			.attr("transform", "translate(" + padding + ",0)")
+			.call(yAxis)
+</script>
+</body>
+</html>

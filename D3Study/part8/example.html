@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../js/d3.v3.js"></script>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script>
+  //画图
+  let w = 500;
+  let h = 400;
+  let padding = 30;
+  let svg = d3.select("body").append("svg").attr("width", w).attr("height", h)
+  //数据
+  let dataset = []
+  for (let i = 0; i < 10; i++) {
+    let xNumber = Math.random() * 200;
+    let yNumber = Math.random() * 200;
+    dataset.push({
+      x: xNumber,
+      y: yNumber
+    })
+  }
+
+  // 比例尺
+  //x轴
+  let xScale = d3.scale.linear().range([padding, w - padding]).domain([0, d3.max(dataset, function (d) {
+    return d.x
+  })])
+
+  //y轴
+  let yScale = d3.scale.linear().range([h - padding, padding]).domain([0, d3.max(dataset, function (d) {
+    return d.y
+  })])
+
+  //画圆
+  let circles = svg.selectAll("circle").data(dataset).enter().append("circle")
+
+  circles.attr("cx", function (d, i) {
+    return xScale(d.x)
+  }).attr("cy", function (d, i) {
+    return yScale(d.y)
+  }).attr("r", 5)
+
+  //设置文字
+  svg.selectAll("text").data(dataset).enter().append("text").attr("x", function (d) {
+    return xScale(d.x) + 5
+  }).attr("y", function (d) {
+    return yScale(d.y) + 3
+  }).text(function (d) {
+    return Math.floor(d.x) + "," + Math.floor(d.y)
+  })
+
+  //设置x轴
+  let xAxis = d3.svg.axis()
+    .scale(xScale) // scale()函数接受X方向的比例尺
+    .orient("bottom") //orient()函数设定数轴的显示方向,接受的参数有"left","right","top","bottom",设置了"top","bottom"就是X轴
+    .ticks(5) //函数设定刻度的数量(默认是10),不过,你设定的这个刻度只是一个建议值,如果D3在分的时候觉得这个值不合适,他会设定一个更合理的值 设置transform属性,让X轴显示在SVG的下方
+  svg.append("g").attr("class", "axis").attr("transform", "translate(0, " + (h - padding) + ")").call(
+    xAxis) //call 创建X轴相似
+
+  //设置y轴
+  let yAxis = d3.svg.axis().scale(yScale).orient("left")
+  svg.append("g").attr("class", "axis").attr("transform", "translate(" + padding + ")").call(yAxis)
+</script>
+
+<style>
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: red ;
+    shap-rendering: crispEdges;
+  }
+</style>

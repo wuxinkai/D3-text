@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../js/d3.v3.js"></script>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script>
+  let svg = d3.select("body").append('svg').attr('width', 500).attr('height', 500)
+  let dataset = [];
+  for (var i = 0; i < 5; i++) {
+    let newNumber = Math.random() * 30;
+    dataset.push(newNumber)
+  }
+  let circles = svg.selectAll('circle').data(dataset).enter().append("circle")
+
+  circles.attr("cx", function (d, i) {
+    return (i * 50) + 25
+  }).attr("cy", 50).attr("r", function (d) {
+    return d
+  }).attr("fill", 'red').attr("stroke", 'orange').attr("stroke-width", function (d) {
+    return d / 2
+  })
+</script>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>绘制散点图</title>
+  <script src="../js/d3.v3.js"></script>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script>
+  //创建画布
+  let svg = d3.select("body").append("svg").attr("width", 500).attr("height", 400)
+
+  //创建数据
+  let dataset = [];
+  for (let i = 0; i < 10; i++) {
+    let xNumber = Math.random() * 200;
+    let yNumber = Math.random() * 300;
+    dataset.push({
+      x: xNumber,
+      y: yNumber,
+    })
+  }
+
+  //设置园的位置大小
+  let circles = svg.selectAll("circle").data(dataset).enter().append("circle")
+  circles.attr('cx', function (d, i) {
+    return d.x
+  }).attr('cy', function (d, i) {
+    return d.y
+  }).attr('r', 5)
+
+  //增加文本
+  svg.selectAll("text")
+    .data(dataset)
+    .enter()
+    .append("text")
+    .attr("x", function (d) {
+      return d.x + 5
+    }).attr('y', function (d) {
+      return d.y + 3
+    }).text(function (d) {
+      return Math.floor(d.x) + `,` + Math.floor(d.y)
+    })
+</script>

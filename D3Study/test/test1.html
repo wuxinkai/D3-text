@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style>
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: black;
+			shap-rendering: crispEdges;
+		}
+
+		line {
+			cursor: move;
+		}
+
+	</style>
+	<script src="../js/d3.v3.js"></script>
+</head>
+<body>
+<svg height="800" width="600"></svg>
+<script>
+	var d = [
+		{
+			x: 20,
+			y: 20
+		}
+	];
+
+	var g = d3.select("svg")
+			.data(d)
+			.append("rect")
+			.attr("width", 40)
+			.attr("height", 40)
+			.attr("stroke", "red")
+			.attr("fill", "transparent")
+			.attr("x", "20")
+			.attr("y", "20")
+			.call(d3.behavior.drag().on("drag", dragHandler).on("dragend", dropHandler))
+
+	var wasMoved = false;
+	var g1 = d3.select("svg")
+			.data(d)
+			.append("g")
+//			.call(d3.behavior.drag().on("drag", dragHandler).on("dragend", dropHandler))
+			.call(d3.behavior.drag().on("drag", dragHandler).on("dragend",dragHandler))
+
+	g1.append('line')
+			.attr('x1', 10)
+			.attr('y1', 10)
+			.attr('x2', 600)
+			.attr('y2', 10)
+			.style("stroke", "black")
+
+
+
+
+
+	function dropHandler(d) {
+//		console.log(d3.event.dy)
+//		if (wasMoved) {
+//
+//			wasMoved = false;
+//		} else {
+//
+//		}
+	}
+
+	function dragHandler(d) {
+		console.log(d3.event);
+		wasMoved = d3.event.dx || d3.event.dy
+		if (wasMoved) {
+			d.x += d3.event.dx;
+			d.y += d3.event.dy;
+//			d3.select(this).attr("transform", "translate(" + d.x + "," + d.y + ")");
+			console.log('dragged');
+		}
+
+	}
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style>
+		.axis path,
+		.axis line{
+			fill: none;
+			stroke: black;
+			shap-rendering: crispEdges;
+		}
+
+	</style>
+	<script src="../js/d3.v3.js"></script>
+</head>
+<body>
+<button id="btn1">更新</button>
+<script>
+	var w = 500;
+	var h = 200;
+	var padding = 25;
+
+	var dataset = [];
+	for (var i = 0; i < 10; i++) {
+		var newNumber = Math.random() * 30;
+		dataset.push({
+			number: newNumber,
+			name: "柱子" + i
+		});
+	}
+
+
+
+	var xScale = d3.scale.ordinal()
+			.rangeRoundBands([padding, w - padding], 0.1)
+			.domain(dataset.map(function (d) {
+				return d.name;
+			}))
+
+
+	var yScale = d3.scale.linear()
+			.rangeRound([padding, h - padding])
+			.domain([
+				d3.max(dataset, function(d){
+					return d.number;
+				}),
+				0
+			])
+
+
+	svg = d3.select("body")
+			.append("svg")
+			.attr("width", w)
+			.attr("height", h)
+
+	svg.selectAll("rect")
+			.data(dataset)
+			.enter()
+			.append("rect")
+			.attr("x", function (d, i) {
+				return xScale(d.name);
+			})
+			.attr("width", xScale.rangeBand())
+			.attr("height", function (d) {
+				return h- yScale(d.number) - padding;
+			})
+			.attr("y", function (d) {
+				return yScale(d.number);
+			})
+
+
+	svg.selectAll("text")
+			.data(dataset)
+			.enter()
+			.append("text")
+			.text(function (d) {
+				return Math.floor(d.number);
+			})
+			.attr("x", function (d, i) {
+				return xScale(d.name) + xScale.rangeBand() / 2
+			})
+			.attr("y", function (d) {
+				return yScale(d.number) + 10
+			})
+			.attr("font-size", "11px")
+			.attr("fill", "white")
+			.attr("text-anchor", "middle")
+
+	var xAxis = d3.svg.axis()
+			.scale(xScale)
+			.orient("bottom")
+
+	svg.append("g")
+			.attr("class", "axis j_xAxis")
+			.attr("transform", "translate(0, " + (h - padding) + ")")
+			.call(xAxis);
+
+	var yAxis = d3.svg.axis()
+			.scale(yScale)
+			.orient("left")
+	svg.append("g")
+			.attr("class", "axis j_yAxis")
+			.attr("transform", "translate(" + padding + ",0)")
+			.call(yAxis)
+
+
+	d3.select("#btn1").on("click", function(){
+		var dataset = [];
+		var l = Math.floor(Math.random() * 10);
+
+		for (var i = 0; i < l; i++) {
+			var newNumber = Math.random() * 30;
+			dataset.push({
+				number: newNumber,
+				name: "柱子" + i
+			});
+		}
+
+		xScale.domain(dataset.map(function (d) {
+			return d.name;
+		}))
+
+		yScale.domain([
+			d3.max(dataset, function(d){
+				return d.number;
+			}),
+			0
+		]);
+
+		svg.selectAll("rect")
+				.data(dataset)
+				.enter()
+				.append("rect")
+				.attr("x", function (d, i) {
+					return xScale(d.name);
+				})
+				.attr("width", xScale.rangeBand())
+				.attr("height", function (d) {
+					return h- yScale(d.number) - padding;
+				})
+				.attr("y", function (d) {
+					return yScale(d.number);
+				})
+		svg.selectAll("rect")
+				.data(dataset)
+				.exit()
+				.remove()
+
+		svg.selectAll("rect")
+				.data(dataset)
+				.attr("x", function (d, i) {
+					return xScale(d.name);
+				})
+				.attr("width", xScale.rangeBand())
+				.attr("height", function (d) {
+					return h- yScale(d.number) - padding;
+				})
+				.attr("y", function (d) {
+					return yScale(d.number);
+				})
+		svg.selectAll("text")
+				.data(dataset)
+				.text(function (d) {
+					return Math.floor(d.number);
+				})
+				.attr("x", function (d, i) {
+					return xScale(d.name) + xScale.rangeBand() / 2
+				})
+				.attr("y", function (d) {
+					return yScale(d.number) + 10
+				})
+
+
+		svg.select(".j_xAxis")
+				.call(xAxis)
+		svg.select(".j_yAxis")
+				.call(yAxis)
+
+	})
+
+
+</script>
+</body>
+</html>

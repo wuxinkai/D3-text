@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>序数比例尺</title>
+  <script src="../js/d3.v3.js"></script>
+  <style>
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: black;
+      shap-rendering: crispEdges;
+    }
+  </style>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script>
+  let w = 500;
+  let h = 400;
+  let padding = 35;
+
+  let dataset = [];
+  for (i = 0; i < 10; i++) {
+    let newNumber = Math.random() * 30
+    dataset.push({
+      number: newNumber,
+      name: "柱子" + i
+    })
+  }
+
+  // x轴 构建一个序数比例尺
+  let xScale = d3.scale.ordinal().rangeRoundBands([padding, w - padding], 0.1).domain(dataset.map(function (d) {
+    return d.name;
+  }))
+
+  // y轴
+  let yScale = d3.scale.linear().rangeRound([padding, h - padding]).domain([d3.max(dataset, function (d) {
+    return d.number
+  }), 0])
+
+  // 设置 柱状图的 粗细  位置
+  let svg = d3.select("body").append("svg").attr("width", w).attr("height", h)
+  svg.selectAll("rect").data(dataset).enter().append("rect")
+    .attr("x", function (d, i) {
+      return xScale(d.name)
+    }).attr("width", xScale.rangeBand())
+    .attr("height", function (d) {
+      return h - yScale(d.number) - padding
+    }).attr("y", function (d) {
+      return yScale(d.number)
+    })
+
+//文本
+  svg.selectAll("text").data(dataset).enter().append("text").text(function (d) {
+      return Math.floor(d.number)
+    }).attr("x", function (d, i) {
+      return xScale(d.name) + xScale.rangeBand() / 2
+    }).attr("y", function (d, i) {
+      return yScale(d.number) + 10
+    }).attr("fon-size", "11px")
+    .attr("fill", "white")
+    .attr("text-anchor", "middle")
+
+//比例尺位置  
+  let xAxis = d3.svg.axis().scale(xScale).orient("bottom")
+  svg.append("g").attr("class","axis").attr("transform","translate(0,"+(h-padding)+")").call(xAxis).attr("font-size", "14px").attr("stroke", "red")
+
+  let yAxis = d3.svg.axis().scale(yScale).orient("left")
+  svg.append("g").attr("class","axis").attr("transform","translate("+padding+",0)").call(yAxis);
+</script>

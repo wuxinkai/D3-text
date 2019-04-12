@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../js/d3.v3.js"></script>
+  <style>
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: black;
+      shap-rendering: crispEdges;
+    }
+  </style>
+</head>
+
+<body>
+  <button id="btn1">更新</button>
+</body>
+
+</html>
+<script>
+  var w = 800;
+  var h = 400;
+  var padding = 25;
+
+  //造数据
+  var dataset = [];
+  for (var i = 0; i < 10; i++) {
+    var newNumber = Math.random() * 30;
+    dataset.push({
+      number: newNumber,
+      name: "柱子" + i
+    });
+  }
+
+  //设置比列尺
+  var xScale = d3.scale.ordinal()
+    .rangeRoundBands([padding, w - padding], 0.1)
+    .domain(dataset.map(function (d) {
+      return d.name;
+    }))
+
+
+  var yScale = d3.scale.linear()
+    .rangeRound([padding, h - padding])
+    .domain([
+      d3.max(dataset, function (d) {
+        return d.number;
+      }),
+      0
+    ])
+
+  // 柱状图
+  svg = d3.select("body").append("svg").attr("width", w).attr("height", h)
+  svg.selectAll("rect").data(dataset).enter().append("rect")
+    .attr("x", function (d, i) {
+      return xScale(d.name);
+    })
+    .attr("width", xScale.rangeBand())
+    .attr("height", function (d) {
+      return h - yScale(d.number) - padding;
+    })
+    .attr("y", function (d) {
+      return yScale(d.number);
+    })
+
+  //设置文本
+  svg.selectAll("text").data(dataset).enter().append("text")
+    .text(function (d) {
+      return Math.floor(d.number);
+    })
+    .attr("x", function (d, i) {
+      return xScale(d.name) + xScale.rangeBand() / 2
+    })
+    .attr("y", function (d) {
+      return yScale(d.number) + 10
+    })
+    .attr("font-size", "14px")
+    .attr("fill", "white")
+    .attr("text-anchor", "middle")
+
+  //坐标轴
+  var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
+  svg.append("g").attr("class", "axis j_xAxis").attr("transform", "translate(0, " + (h - padding) + ")").call(xAxis);
+
+  var yAxis = d3.svg.axis().scale(yScale).orient("left")
+  svg.append("g").attr("class", "axis j_yAxis").attr("transform", "translate(" + padding + ",0)").call(yAxis)
+
+  //点击事件
+  let l = 10;
+  d3.select("#btn1").on("click", function (d) {
+    var dataset = [];
+    l++;
+    for (var i = 0; i < l; i++) {
+      var newNumber = Math.random() * 30;
+      dataset.push({
+        number: newNumber,
+        name: "柱子" + i
+      });
+    }
+
+    //比例尺
+    xScale.domain(dataset.map(function (d) {
+      return d.name
+    }))
+    yScale.domain([d3.max(dataset, function (d) {
+      return d.number
+    }), 0])
+    
+
+    //原有柱状图
+    svg.selectAll("rect").data(dataset).enter().append("rect").attr("x", function (d, i) {
+        return xScale(d.name)
+      }).attr("x", function (d) {
+        return xScale(d.name)
+      }).attr("width", xScale.rangeBand())
+      .attr("height", function (d) {
+        return h - yScale(d.number) - padding
+      }).attr("y", function (d) {
+        return yScale(d.number)
+      })
+
+    //在原有柱状图里插入新的内容 ,比上面少了 .enter().append("rect") 代码
+    svg.selectAll("rect").data(dataset).attr("x",function(d,i){
+      return xScale(d.name)
+    }).attr("width",xScale.rangeBand())
+    .attr("height",function(d){
+      return h-yScale(d.number)-padding
+    }).attr("y",function(d){
+      return yScale(d.number)
+    })
+
+    //设置比例尺的文字内容
+    svg.selectAll("text").data(dataset).text(function(d){
+      return Math.floor(d.number)
+    }).attr("x",function(d,i){
+      return xScale(d.name)+ xScale.rangeBand()/2
+    }).attr("y",function(d){
+      return yScale(d.number)+10
+    })
+
+    //增加class x轴 class 和y轴class
+    svg.select(".j_xAxis").call(xAxis)
+    svg.select(".j_yAxis").call(yAxis)
+  })
+</script>

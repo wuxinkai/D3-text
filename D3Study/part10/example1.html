@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>文字跟着显示或者隐藏</title>
+  <script src="../js/d3.v3.js"></script>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script>
+  let w = 500;
+  let h = 400;
+  let padding = 30;
+
+  let dataset = []
+  for (let i = 0; i < 10; i++) {
+    let newNumber = Math.random() * 30;
+    dataset.push({
+      number: newNumber,
+      name: `柱子${i}`
+    })
+  }
+  console.log(dataset);
+
+  //设置坐标轴
+  //x轴
+  let xScale = d3.scale.ordinal().rangeRoundBands([padding, w - padding], 0.1).domain(dataset.map(function (d) {
+    return d.name
+  }))
+  // y轴
+  let yScale = d3.scale.linear().rangeRound([padding, h - padding]).domain([d3.max(dataset, function (d) {
+    return d.number
+  }), 0])
+
+
+  //
+  let svg = d3.select("body").append("svg").attr("width", w).attr("height", h)
+
+  svg.selectAll("rect").data(dataset).enter().append("rect").attr("x", function (d, i) {
+      return xScale(d.name)
+    }).attr("width", xScale.rangeBand())
+    .attr("height", function (d) {
+      return h - yScale(d.number) - padding
+    }).attr("y",function(d){
+      return yScale(d.number)
+    })
+    .on("mouseover",function(d){
+      d3.select(this).attr("fill",'orange')
+      let xPosition = parseFloat(d3.select(this).attr("x"))+xScale.rangeBand()/2;  //文字出现在 柱状图上的位置
+      let yPosition = parseFloat(d3.select(this).attr("y"))+15;
+
+      //设置文字
+      svg.append("text")
+      .attr("id","tooltip")
+      .attr("x",xPosition)
+      .attr("y",yPosition)
+      .text(Math.floor(d.number))
+      .attr("font-size","14px")
+      .attr("fill","white")
+      .attr("text-anchor","middle")
+    })
+    .on("mouseout",function(){
+      d3.select(this).attr("fill","block")
+      svg.select("#tooltip").remove()
+    })
+
+    //设置x轴
+    let xAxis = d3.svg.axis().scale(xScale).orient("bottom")
+    svg.append("g").attr("class","axis").attr("transform","translate(0,"+(h-padding)+")").call(xAxis)
+
+    let yAxis = d3.svg.axis().scale(yScale).orient("left")
+    svg.append("g").attr("class","axis").attr("transform","translate("+padding+",0)").call(yAxis)
+</script>

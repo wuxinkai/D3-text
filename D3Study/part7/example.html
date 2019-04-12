@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>线性比例尺</title>
+  <script src="../js/d3.v3.js"></script>
+</head>
+<body>
+  
+</body>
+</html>
+<script>
+  let scale = d3.scale.linear() // 生成线性比例尺
+  .range([10,350]) // 设置定义域
+  .domain([100,500]) // 设置值域
+  console.log(scale(100)); //10
+  console.log(scale(500)); //350
+  console.log(scale(200)); //95
+</script>

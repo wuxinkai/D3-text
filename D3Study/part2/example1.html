@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>
+		div.bar{
+			display: inline-block;
+			width: 20px;
+			height: 75px;
+			background-color: teal;
+			margin-right: 2px;
+		}
+	</style>
+	<script src="../js/d3.v3.js"></script>
+</head>
+<body>
+
+<script>
+	// 构建模拟数据
+	var dataset = [];
+	for(var i=0; i< 25; i++){
+		var newNumber = Math.random() *30;
+		dataset.push(newNumber);
+	}
+
+	d3.select("body")
+			.selectAll("div")
+			.data(dataset)
+			.enter() //当DOM数量少于data的数量，或者压根一个都没有的时候，我们一般会希望让程序帮忙创建
+			.append("div")
+			.attr("class", "bar")
+			.style("height", function(d){
+				var barHeight = d * 5;
+				return barHeight + "px";
+			})
+</script>
+</body>
+
+</html>
