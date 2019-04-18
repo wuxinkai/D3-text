@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="../js/d3.v3.js"></script>
+</head>
+<body>
+  
+</body>
+</html>
+<script>
+  let w= 1000;
+  let h=1000;
+  let padding =20;
+  
+  let svg = d3.select("body").append("svg").attr("width",w).attr("height",h)
+
+  let dataset ={
+    x:20,
+    y:20
+  }
+
+  let drag =d3.behavior.drag();
+
+  drag.on("drag",function(d){
+    d.x +=d3.event.dx;
+    d.y +=d3.event.dy;
+    d3.select(this).attr("transform","translate("+d.x+","+d.y+")")
+  })
+
+  let rect =svg.append("rect").datum(dataset)
+  .attr("width",55)
+  .attr("height",55)
+  .attr("stroke",'red')
+  // .attr("fill",'transparent')
+  .attr("fill",'pink')
+  .attr("x","20")
+  .attr("y","20")
+  .call(drag)
+
+</script>
