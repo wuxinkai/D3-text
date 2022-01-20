@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./go.js"></script>
+  </head>
+  <body>
+    <div id="myDiagramDiv" style="border: 1px solid black; margin: 10px;height: 700px; " > </div>
+ 
+ 
+  </body>
+</html>
+<script>
+
+var $ = go.GraphObject.make;
+var myDiagram =$(go.Diagram, "myDiagramDiv",{"undoManager.isEnabled": true, layout: $(go.TreeLayout, { angle: 90, layerSpacing: 35 })});
+
+// -------------------------------
+
+myDiagram.nodeTemplate =
+$(go.Node, "Horizontal",{ background: "#44CCFF" },
+$(go.Picture,{ margin: 10, width: 50, height: 50, background: "red" },new go.Binding("source")),
+$(go.TextBlock, "Default Text",{ margin: 12, stroke: "white", font: "bold 16px sans-serif" },new go.Binding("text", "name"))
+);
+
+
+
+// -----------------------------------
+myDiagram.linkTemplate =$(go.Link,{ routing: go.Link.Orthogonal, corner: 5 },$(go.Shape, { strokeWidth: 3, stroke: "red" }));
+
+
+var model = $(go.TreeModel);
+model.nodeDataArray =[
+{ key: "1",              name: "Don Meow",   source: "https://gojs.net.cn/images/learn/cat1.png" },
+	{ key: "2", parent: "1", name: "Demeter",    source: "https://gojs.net.cn/images/learn/cat2.png" },
+	{ key: "3", parent: "1", name: "Copricat",   source: "https://gojs.net.cn/images/learn/cat3.png" },
+	{ key: "4", parent: "3", name: "Jellylorum", source: "https://gojs.net.cn/images/learn/cat4.png" },
+	{ key: "5", parent: "3", name: "Alonzo",     source: "https://gojs.net.cn/images/learn/cat5.png" },
+	{ key: "6", parent: "2", name: "Munkustrap", source: "https://gojs.net.cn/images/learn/cat6.png" }
+  ];
+myDiagram.model = model;
+</script>

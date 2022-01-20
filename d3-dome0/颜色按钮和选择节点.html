@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./go.js"></script>
+  </head>
+  <body>
+    <div
+      id="myDiagramDiv"
+      style="border: 1px solid black; margin: 10px; height: 700px"
+    ></div>
+    <div id="zoomToFit">缩小</div>
+  </body>
+</html>
+<script>
+  if (window.goSamples) goSamples();
+  var $ = go.GraphObject.make; // 初始化
+  var myDiagram = $(go.Diagram, "myDiagramDiv", {
+    "undoManager.isEnabled": true, // 启用Ctrl-Z撤消和Ctrl-Y重做
+  }); //创建画布
+
+  myDiagram.nodeTemplate = $(
+    go.Node,
+    "Auto",
+    $(go.Shape, "Rectangle", new go.Binding("fill", "color")), // Rectangle 矩形
+    $(
+      go.TextBlock,
+      { margin: 16, font: "18px sans-serif" },
+      new go.Binding("text", "key")
+    )
+  );
+
+  myDiagram.model = new go.GraphLinksModel([
+    { key: "1111111", color: "lightblue" },
+    { key: "2222222", color: "orange" },
+    { key: "3333333", color: "lightgreen" },
+    { key: "444444", color: "pink" },
+    { key: "1111111", color: "lightblue" },
+    { key: "2222222", color: "orange" },
+    { key: "3333333", color: "lightgreen" },
+    { key: "444444", color: "pink" },
+
+  ]);
+
+  var node = myDiagram.findNodeForKey("2222222");
+
+  //选择节点：
+
+  // myDiagram.select(node)
+  // console.log(node.data);
+
+  //提交在startTransaction和commitTransaction之间执行给定函数
+  //自动更新显示并允许取消效果
+
+  myDiagram.commit(function (d) {
+    //迭代所有节点
+    d.nodes.each(function (node) {
+      //   debugger
+      // if (node.data.key == "3333333"){
+      //  //跳过 3333333，只是为了对比
+      // }else{
+      //   node.scale = 0.4;  //除了3333333 其他都缩小
+      // }
+      node.findTreeParentChain().each(function (pNode) {
+        console.log(pNode.data);
+      });
+    });
+  }, "循环所有节点设置样式");
+
+  document.getElementById("zoomToFit").addEventListener("click", function () {
+    myDiagram.commandHandler.zoomToFit();
+  });
+</script>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./go.js"></script>
+  </head>
+  <body>
+    <div
+      id="myDiagramDiv4"
+      style="border: 1px solid black; margin: 10px; height: 700px"
+    ></div>
+
+    <button id="selectionButton">点击内容</button>
+  </body>
+</html>
+<script>
+  if (window.goSamples) goSamples();
+  var $ = go.GraphObject.make; // 初始化
+  var myDiagram = $(go.Diagram, "myDiagramDiv4", {
+    "undoManager.isEnabled": true, // 启用Ctrl-Z撤消和Ctrl-Y重做
+  }); //创建画布
+
+  myDiagram.nodeTemplate = $(
+    go.Node,
+    "Horizontal",
+    {
+      // movable:false,
+      // deletable:false,
+      background: "#44CCFF",
+    }, //背景
+    $(
+      go.Picture,
+      { margin: 10, width: 50, height: 50, background: "red" },
+      new go.Binding("source")
+    ),
+    $(
+      go.TextBlock,
+      "默认",
+      { margin: 12, stroke: "white", font: "bold 16px sans-serif" },
+      new go.Binding("text", "name")
+    )
+  );
+
+  myDiagram.linkTemplate = $(
+    go.Link,
+    {
+      // selectable: false, // 用户不能选择链接
+      // curve: go.Link.Bezier, //是否要
+      layerName: "Background", // 不要在任何节点前面交叉
+    },
+    $(go.Shape, {
+      strokeWidth: 4,
+      stroke: $(go.Brush, "Linear", {
+        0.0: "rgba(56, 71, 99, 1)",
+        1.0: "rgba(86, 110, 153, 1)",
+      }),
+    }),
+    $(go.Shape, {
+      toArrow: "OpenTriangle",
+      fill: null,
+      strokeWidth: 4,
+      stroke: "rgba(86, 110, 153, 1)",
+    })
+  );
+  //--------------------判断是什么类型-------------------------
+  // var model = $(go.TreeModel);
+
+
+
+
+
+
+
+
+
+
+  //  “key”和“parent”属性名是必需的，
+  //但是你可以为你的应用添加你需要的任何数据属性
+  var nodeDataArray = [
+    {
+      key: "1",
+      name: "汤姆",
+      source: "https://gojs.net.cn/images/learn/cat1.png",
+    },
+    {
+      key: "2",
+      parent: "1",
+      name: "天猫",
+      source: "https://gojs.net.cn/images/learn/cat2.png",
+    },
+    {
+      key: "3",
+      parent: "1",
+      name: "中华田园",
+      source: "https://gojs.net.cn/images/learn/cat3.png",
+    },
+    {
+      key: "4",
+      parent: "3",
+      name: "孩子",
+      source: "https://gojs.net.cn/images/learn/cat4.png",
+    },
+    {
+      key: "5",
+      parent: "3",
+      name: "大人",
+      source: "https://gojs.net.cn/images/learn/cat5.png",
+    },
+    {
+      key: "6",
+      parent: "2",
+      name: "哈哈",
+      source: "https://gojs.net.cn/images/learn/cat6.png",
+    },
+  ];
+
+
+  var linkDataArray = [
+    { from: "6", to: "3" },
+    { from: "3", to: "4" },
+   
+  ];
+
+
+  myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+
+
+
+
+
+  //获取选中内容
+  document.querySelector("#selectionButton").onclick = function () {
+    var nodeOrLinkList = myDiagram.selection;
+
+    nodeOrLinkList.each(function (nodeOrLink) {
+      if (nodeOrLink instanceof go.Node) {
+        //获取选中节点
+        var key = nodeOrLink.data.key;
+      } else if (nodeOrLink instanceof go.Link) {
+        //获取选中的连线
+        var from = nodeOrLink.data.from;
+        var to = nodeOrLink.data.to;
+        console.log(from, to);
+      }
+    });
+  };
+</script>

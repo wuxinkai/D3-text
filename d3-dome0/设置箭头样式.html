@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./go.js"></script>
+  </head>
+  <body>
+    <div id="myDiagramDiv" style="border: 1px solid black; height: 700px; " > </div>
+ <div id="ObjectSingleClicked"></div>
+ 
+  </body>
+</html>
+<script>
+
+var $ = go.GraphObject.make, 
+	diagram = $(go.Diagram, "myDiagramDiv");
+diagram.nodeTemplate =
+	$(go.Node, "Auto",
+	  $(go.Shape, "RoundedRectangle",{ fill: "white" },new go.Binding("fill", "color")),  // shape.fill = data.color
+	  $(go.TextBlock,{ margin: 15 },new go.Binding("text", "key"))  // textblock.text = data.key
+   );
+   
+
+diagram.linkTemplate =
+	$(go.Link,
+	  $(go.Shape,new go.Binding("stroke", "color"),	new go.Binding("strokeWidth", "thick")),  // shape.strokeWidth = data.thick
+	  $(go.Shape,{ toArrow: "OpenTriangle", fill: null },new go.Binding("stroke", "color"), new go.Binding("strokeWidth", "thick"))  // shape.strokeWidth = data.thick
+   );
+   
+
+   function showMessage(s) {
+    document.getElementById("diagramEventsMsg").textContent = s;
+}
+ 
+// 为diagram添加一个“对象单机”事件
+diagram.addDiagramListener("ObjectSingleClicked",      
+    function(e) {
+        var part = e.subject.part;
+        //如果鼠标单机的不是连接线，则显示信息："Clicked on" +  鼠标点击的目标的key值      
+        if (!(part instanceof go.Link)) showMessage("Clicked on " + part.data);
+    })
+
+
+var nodeDataArray = [
+	{ key: "Alpha", color: "lightblue" },
+	{ key: "Beta", color: "pink" }
+];
+
+
+var linkDataArray = [
+	{ from: "Alpha", to: "Beta", color: "blue", thick:4 }
+];
+diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+</script>

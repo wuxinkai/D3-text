@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./go.js"></script>
+  </head>
+  <body>
+    <div
+      id="myDiagramDiv"
+      style="border: 1px solid black; margin: 10px; height: 700px"
+    ></div>
+  </body>
+</html>
+<script>
+  if (window.goSamples) goSamples();
+  var $ = go.GraphObject.make; // 初始化
+  var myDiagram = $(go.Diagram, "myDiagramDiv", {
+    "undoManager.isEnabled": true, // 启用Ctrl-Z撤消和Ctrl-Y重做
+  }); //创建画布
+
+  myDiagram.nodeTemplate = $(
+    go.Node,
+    "Horizontal", //节点子元素布局定义
+    {
+      //节点继承Part的属性定义,例如
+      movable: false, //禁止拖动
+      deletable: false, //禁止删除
+      //节点的属性定义也写在这
+    },
+    $(
+      go.Panel,"Auto",  $(go.Shape,{ fill: "#1F4963" },new go.Binding("fill", "color"))
+    ) //Panel块
+  );
+
+  myDiagram.model = new go.GraphLinksModel([
+    { key: "1111111", color: "lightblue" },
+    { key: "2222222", color: "orange" },
+    { key: "3333333", color: "lightgreen" },
+    { key: "444444", color: "pink" },
+  ]);
+
+  myDiagram.model = model;
+</script>

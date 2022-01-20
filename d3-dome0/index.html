@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./go.js"></script>
+  </head>
+  <body>
+    <div id="myDiagramDiv" style="border: 1px solid black; margin: 10px;height: 700px; " > </div>
+ 
+ 
+  </body>
+</html>
+<script>
+function init() {
+	if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+	var $ = go.GraphObject.make;  // for conciseness in defining templates
+	// Must name or refer to the DIV HTML element
+	myDiagram =	$(go.Diagram, "myDiagramDiv",
+		  { //自动缩放图表以适应视口的大小
+		initialAutoScale: go.Diagram.Uniform,
+		// 禁用用户复制部件
+		allowCopy: false,
+		//定位所有节点并路由所有链接
+		layout:
+		$(go.LayeredDigraphLayout,
+		  {
+			direction: 90,
+			layerSpacing: 10,
+			columnSpacing: 15,
+			setsPortSpots: false
+		})
+	});
+	//替换nodeTemplateMap中的默认节点模板
+	myDiagram.nodeTemplate =
+		$(go.Node, "Vertical",  //整个节点面板
+		  $(go.TextBlock, //文本标签
+			new go.Binding("text", "key")),
+		  $(go.Picture,  //显示徽标的图标
+		//您应该设置所需的大小（或宽度和高度）
+		//只要你知道照片的尺寸。
+			{ desiredSize: new go.Size(75, 50) },
+			new go.Binding("source", "key", convertKeyImage))
+		 );
+//替换linkTemplateMap中的默认链接样板
+	myDiagram.linkTemplate =
+		$(go.Link,  //整个连接面板
+		  { curve: go.Link.Bezier, toShortLength: 2 },
+		  $(go.Shape,  //链接形状
+			{ strokeWidth: 1.5 }),
+		  $(go.Shape,  //箭头
+			{ toArrow: "Standard", stroke: null })
+		 );
+//链接数据对象的数组：节点之间的关系
+	var linkDataArray = [
+		{ from: "CAR", to: "ARI" },
+		{ from: "ARI", to: "CIN" },
+		{ from: "ARI", to: "GB" },
+		{ from: "DEN", to: "GB" },
+		{ from: "DEN", to: "CIN" },
+		{ from: "DEN", to: "NE" },
+		{ from: "GB", to: "WAS" },
+		{ from: "WAS", to: "STL" },
+		{ from: "CIN", to: "STL" },
+		{ from: "STL", to: "SEA" },
+		{ from: "SEA", to: "SF" },
+		{ from: "SEA", to: "MIN" },
+		{ from: "NE", to: "NYG" },
+		{ from: "NE", to: "KC" },
+		{ from: "MIN", to: "DET" },
+		{ from: "MIN", to: "KC" },
+		{ from: "KC", to: "HOU" },
+		{ from: "KC", to: "BUF" },
+		{ from: "KC", to: "BAL" },
+		{ from: "KC", to: "OAK" },
+		{ from: "BUF", to: "NYJ" },
+		{ from: "BAL", to: "PIT" },
+		{ from: "DET", to: "NO" },
+		{ from: "DET", to: "PHI" },
+		{ from: "DET", to: "CHI" },
+		{ from: "HOU", to: "JAC" },
+		{ from: "HOU", to: "TEN" },
+		{ from: "PIT", to: "IND" },
+		{ from: "PIT", to: "SD" },
+		{ from: "OAK", to: "NYJ" },
+		{ from: "OAK", to: "SD" },
+		{ from: "NO", to: "ATL" },
+		{ from: "NO", to: "NYG" },
+		{ from: "PHI", to: "NYG" },
+		{ from: "CHI", to: "TB" },
+		{ from: "NYJ", to: "IND" },
+		{ from: "NYJ", to: "CLE" },
+		{ from: "IND", to: "TB" },
+		{ from: "TB", to: "ATL" },
+		{ from: "SD", to: "CLE" },
+		{ from: "ATL", to: "DAL" },
+		{ from: "ATL", to: "JAC" },
+		{ from: "CLE", to: "TEN" },
+		{ from: "DAL", to: "MIA" },
+		{ from: "MIA", to: "TEN" }
+	];
+	//创建模型并将其分配给图表
+	myDiagram.model =
+		$(go.GraphLinksModel,
+		  { //为每个“from”或“to”引用自动创建节点数据对象
+	//（在设置linkDataArray之前设置此属性）
+		archetypeNodeData: {},
+		//处理所有链接关系数据
+		linkDataArray: linkDataArray
+	});
+}
+function convertKeyImage(key) {
+	if (!key) key = "NE";
+	return "https://www.nwoods.com/go/beatpaths/" + key + "_logo-75x50.png";
+}
+;
+if(window.init) {init();}
+</script>

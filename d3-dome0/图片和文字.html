@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./go.js"></script>
+  </head>
+  <body>
+    <div
+      id="myDiagramDiv3"
+      style="border: 1px solid black; margin: 10px; height: 700px"
+    ></div>
+  </body>
+</html>
+<script>
+  function showLinkLabel(e) {
+    var label = e.subject.findObject("LABEL");
+    if (label !== null)
+      label.visible = e.subject.fromNode.data.category === "Conditional";
+  }
+
+  if (window.goSamples) goSamples();
+  var $ = go.GraphObject.make;
+  var myDiagram = $(go.Diagram, "myDiagramDiv3", {
+    // LinkDrawn: showLinkLabel,
+    // LinkRelinked: showLinkLabel,
+    // "undoManager.isEnabled": true,
+    LinkDrawn: showLinkLabel, // this DiagramEvent listener is defined below
+    LinkRelinked: showLinkLabel,
+    nodeSelectionAdornmentTemplate: $(
+      go.Adornment,
+      "Auto",
+      $(go.Shape, "Rectangle", { fill: "white", stroke: null })
+    ),
+
+    "undoManager.isEnabled": true, // enable Ctrl-Z to undo and Ctrl-Y to redo
+  });
+  // define a simple Node template
+  myDiagram.nodeTemplate = $(
+    go.Node,
+    "Spot",
+    new go.Binding("position", "pos", go.Point.parse).makeTwoWay(
+      go.Point.stringify
+    ), //水平”面板类型的节点，意味着其元素将水平并排布置。它有两个要素
+    $(
+      go.Panel,
+      "Auto",
+      //整个节点的背景为浅蓝色
+      { background: "#44CCFF" },
+      //图片通常应该有明确的宽度和高度。
+      //此图片的背景为红色，只有在没有源设置时才可见
+      //或者图像部分透明时
+      // 图片来源数据是否绑定到模型数据的“源”属性
+      $(
+        go.Picture,
+        { margin: 10, width: 50, height: 50, background: "red" },
+        new go.Binding("source")
+      ),
+      $(
+        go.TextBlock,
+        "Default Text",
+        { stroke: "white", font: "bold 16px sans-serif" },
+        new go.Binding("text", "name")
+      )
+    )
+  );
+  var model = $(go.Model);
+  //注意，每个节点数据对象都拥有它需要的任何属性；
+  //对于这个应用程序，我们添加了“name”和“source”属性
+  model.nodeDataArray = [
+    {
+      name: "Don Meow",
+      pos: "0 0",
+      source: "https://gojs.net.cn/images/learn/cat1.png",
+    },
+    {
+      name: "Copricat",
+      pos: "276 19",
+      source: "https://gojs.net.cn/images/learn/cat2.png",
+    },
+    {
+      name: "Demeter",
+      pos: "144 214",
+      source: "https://gojs.net.cn/images/learn/cat3.png",
+    },
+  ];
+  myDiagram.model = model;
+</script>
